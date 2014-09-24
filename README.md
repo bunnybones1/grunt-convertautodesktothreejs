@@ -1,6 +1,6 @@
 # grunt-convertautodesktothree
 
-> A task that converts autodesk 3D models to JSON models for threejs.
+> A task that converts autodesk DAE and FBX models to JSON models for threejs.
 
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
@@ -22,6 +22,8 @@ grunt.loadNpmTasks('grunt-convertautodesktothree');
 ### Overview
 In your project's Gruntfile, add a section named `convertautodesktothree` to the data object passed into `grunt.initConfig()`.
 
+### Usage Examples
+
 ```js
 grunt.initConfig({
   convertautodesktothree: {
@@ -39,9 +41,6 @@ grunt.initConfig({
   },
 });
 ```
-
-### Usage Examples
-
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
