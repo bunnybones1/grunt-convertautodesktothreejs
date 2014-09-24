@@ -29,6 +29,9 @@ module.exports = function(grunt) {
     },
 
     convertautodesktothree: {
+      options: {
+        standaloneTest: true
+      }
       default_options: {
         options: {
           models: [
