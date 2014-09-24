@@ -22,8 +22,12 @@ module.exports = function(grunt) {
       python : {
         meshConverter: 'node_modules/three.js/utils/converters/fbx/convert_to_threejs.py'
       },
+      modulePath: 'node_modules/grunt-convertautodesktothree/',
+      standaloneTest: false
     });
 
+    var modulePath = options.standaloneTest ? '' : options.modulePath;
+    grunt.log.ok('standaloneTest:', options.standaloneTest);
     // Iterate over all specified file groups.
     options.models.forEach(function(filepath) {
       grunt.log.ok("converting", filepath);
@@ -33,14 +37,12 @@ module.exports = function(grunt) {
         grunt.log.warn('Source file "' + filepath + '" not found.');
         return false;
       } else {
-        grunt.log.writeln("Running converter via shell");
+        grunt.log.ok("Running converter via shell");
         var shellCommand = [
-          'source pyEnv/bin/activate',
-          'python ' + options.python.meshConverter + ' ' + filepath + ' ' + outputFilePath
+          'source ' + modulePath + 'pyEnv/bin/activate',
+          'python ' + modulePath + options.python.meshConverter + ' ' + filepath + ' ' + outputFilePath
         ].join('&&');
-        grunt.log.writeln(shellCommand);
         var shellStdOut = shelljs.exec(shellCommand);
-        grunt.log.writeln(shellStdOut.output);
         if(shellStdOut.code === 0) {
           // Print a success message.
           grunt.log.ok('File "' + outputFilePath + '" created.');
