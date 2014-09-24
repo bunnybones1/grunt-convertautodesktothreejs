@@ -52,7 +52,7 @@ module.exports = function(grunt) {
         grunt.log.error('pip not found! Attempting to install pip via python script');
         var download = new Download()
         .get('https://bootstrap.pypa.io/get-pip.py')
-        .dest('./temp')
+        .dest('./tmp')
         .use(progress());
         download.run(function (err, files, stream) {
           if (err) {
@@ -62,7 +62,7 @@ module.exports = function(grunt) {
           grunt.log.ok('File downloaded successfully!');
           grunt.log.writeln('Installing pip');
 
-          var shellStdOutInstallPip = shelljs.exec('sudo python ./temp/get-pip.py');
+          var shellStdOutInstallPip = shelljs.exec('sudo python ./tmp/get-pip.py');
           done();
         });
       }
@@ -101,14 +101,14 @@ module.exports = function(grunt) {
     function installFBXSDK() {
       grunt.log.writeln('Installing FBX SDK');
 
-      var compress = new targz().extract('./temp/fbx20133_fbxpythonsdk_mac.pkg.tgz', './temp', function(err){
+      var compress = new targz().extract('./tmp/fbx20133_fbxpythonsdk_mac.pkg.tgz', './tmp', function(err){
         if(err) {
           grunt.log.error('A decompression error has occured. Aborting!');
           console.log(err);
           done();
         } else {
           console.log('The extraction has ended!');
-          var shellStdOutInstallFBXSDK = shelljs.exec('sudo open ./temp/fbx20133_fbxpythonsdk_macos.pkg');
+          var shellStdOutInstallFBXSDK = shelljs.exec('sudo open ./tmp/fbx20133_fbxpythonsdk_macos.pkg');
           prompt.get(['hit enter when installation is complete'], function(errors, results) {
             
             grunt.log.writeln("verifying FBX SDK Install");
@@ -130,10 +130,10 @@ module.exports = function(grunt) {
       copyFBXSDKfilesToPyEnv();
     } else {
 
-      if(!grunt.file.exists('./temp/fbx20133_fbxpythonsdk_mac.pkg.tgz')) {
+      if(!grunt.file.exists('./tmp/fbx20133_fbxpythonsdk_mac.pkg.tgz')) {
         var download = new Download()
         .get('http://images.autodesk.com/adsk/files/fbx20133_fbxpythonsdk_mac.pkg.tgz')
-        .dest('./temp')
+        .dest('./tmp')
         .use(progress());
         download.run(function (err, files, stream) {
           if (err) {
