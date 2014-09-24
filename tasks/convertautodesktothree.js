@@ -37,6 +37,7 @@ module.exports = function(grunt) {
           'source pyEnv/bin/activate',
           'python ' + options.python.meshConverter + ' ' + filepath + ' ' + outputFilePath
         ].join('&&'));
+        grunt.log.writeln(shellStdOut.output);
         if(shellStdOut.code === 0) {
           // Print a success message.
           grunt.log.ok('File "' + outputFilePath + '" created.');
