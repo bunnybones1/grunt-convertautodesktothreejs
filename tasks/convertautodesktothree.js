@@ -25,30 +25,23 @@ module.exports = function(grunt) {
     });
 
     // Iterate over all specified file groups.
-    this.files.forEach(function(f) {
-      // Concat specified files.
-      var src = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
-        }
-      }).map(function(filepath) {
-        console.log(filepath);
+    options.models.forEach(function(filepath) {
+      grunt.log.ok("converting", filepath);
+      var outputFilePath = derive.path(filepath) + derive.baseName(filepath)+'.json';
+      // Warn on and remove invalid source files (if nonull was set).
+      if (!grunt.file.exists(filepath)) {
+        grunt.log.warn('Source file "' + filepath + '" not found.');
+        return false;
+      } else {
         var shellStdOut = shelljs.exec([
           'source pyEnv/bin/activate',
-          'python ' + options.python.meshConverter + ' ' + filepath + ' ' + derive.path(filepath)+derive.baseName(filepath)+'.json'
+          'python ' + options.python.meshConverter + ' ' + filepath + ' ' + outputFilePath
         ].join('&&'));
-        grunt.log.writeln(shellStdOut.output);
-        if(shellStdOut.code == 0) {
+        if(shellStdOut.code === 0) {
           // Print a success message.
-          grunt.log.writeln('File "' + filepath + '" created.');
+          grunt.log.ok('File "' + outputFilePath + '" created.');
         }
-      });
-
+      }
     });
   });
-
 };

@@ -13,7 +13,7 @@ var Download = require('download');
 var progress = require('download-status');
 var targz = require('tar.gz');
 var prompt = require('prompt');
-var copy = require('directory-copy')
+var copy = require('directory-copy');
 
 module.exports = function(grunt) {
 
@@ -39,14 +39,14 @@ module.exports = function(grunt) {
 
     grunt.log.writeln('Checking for virtualenv');
     var shellStdOutVirtualEnv = shelljs.exec('virtualenv --version');
-    if(shellStdOutVirtualEnv.output.indexOf('not found') == -1) {
+    if(shellStdOutVirtualEnv.output.indexOf('not found') === -1) {
       grunt.log.ok('OK');
     } else {
       grunt.log.error('virtualenv not found! Attempting to install virtualenv via pip');
 
       grunt.log.writeln('Checking for pip');
       var shellStdOutPip = shelljs.exec('pip --version');
-      if(shellStdOutPip.output.indexOf('not found') == -1) {
+      if(shellStdOutPip.output.indexOf('not found') === -1) {
         grunt.log.ok('OK');
       } else {
         grunt.log.error('pip not found! Attempting to install pip via python script');
@@ -119,7 +119,7 @@ module.exports = function(grunt) {
               grunt.log.error("Autodesk FBX SDK failed to install.");
               done();
             }
-          })
+          });
         }
       });
     }
@@ -131,11 +131,11 @@ module.exports = function(grunt) {
     } else {
 
       if(!grunt.file.exists('./tmp/fbx20133_fbxpythonsdk_mac.pkg.tgz')) {
-        var download = new Download()
+        var download2 = new Download()
         .get('http://images.autodesk.com/adsk/files/fbx20133_fbxpythonsdk_mac.pkg.tgz')
         .dest('./tmp')
         .use(progress());
-        download.run(function (err, files, stream) {
+        download2.run(function (err, files, stream) {
           if (err) {
               throw err;
           }

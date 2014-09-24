@@ -31,10 +31,10 @@ module.exports = function(grunt) {
     convertautodesktothree: {
       default_options: {
         options: {
-        },
-        files: [
-          'test/fixtures/parse.autodesk.dae'
-        ]
+          models: [
+            'test/fixtures/parse.autodesk.dae'
+          ]
+        }
       }
     },
 

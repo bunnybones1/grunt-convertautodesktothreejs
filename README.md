@@ -33,11 +33,11 @@ grunt.initConfig({
     exampleScene: {
       options: {
         // Target-specific options go here.
-      },
-      files: [
-        'test/fixtures/parse.autodesk.dae'
-      ]
-    },
+        models: [
+          'test/fixtures/parse.autodesk.dae'
+        ]
+      }
+    }
   },
 });
 ```
