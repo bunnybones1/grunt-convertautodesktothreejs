@@ -33,6 +33,7 @@ module.exports = function(grunt) {
         grunt.log.warn('Source file "' + filepath + '" not found.');
         return false;
       } else {
+        grunt.log.writeln("Runnig converter via shell");
         var shellStdOut = shelljs.exec([
           'source pyEnv/bin/activate',
           'python ' + options.python.meshConverter + ' ' + filepath + ' ' + outputFilePath
