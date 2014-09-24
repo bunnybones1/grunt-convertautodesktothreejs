@@ -38,7 +38,7 @@ module.exports = function(grunt) {
           'source pyEnv/bin/activate',
           'python ' + options.python.meshConverter + ' ' + filepath + ' ' + outputFilePath
         ].join('&&');
-        grunt.log.verbose(shellCommand);
+        grunt.log.writeln(shellCommand);
         var shellStdOut = shelljs.exec(shellCommand);
         grunt.log.writeln(shellStdOut.output);
         if(shellStdOut.code === 0) {
