@@ -8,12 +8,13 @@
 
 'use strict';
 
-var shelljs = require('shelljs');
-var Download = require('download');
-var progress = require('download-status');
-var targz = require('tar.gz');
-var prompt = require('prompt');
-var copy = require('directory-copy');
+var shelljs = require('shelljs'),
+  Download = require('download'),
+  progress = require('download-status'),
+  targz = require('tar.gz'),
+  prompt = require('prompt'),
+  path = require('path'),
+  copy = require('directory-copy');
 
 module.exports = function(grunt) {
 
@@ -23,11 +24,23 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('installPythonDependencies', 'A task that sets up Python and the autodesk FBX SDK for you.', function() {
     // Merge task-specific and/or target-specific options with these defaults.
     var done = this.async();
+    var plaformOptions = {
+      mac: {
+        pythonPath : '/usr/bin/python2.6',
+        fbxSDKPath : '/Applications/Autodesk/FBX Python SDK/2013.3'
+      },
+      win: {
+        pythonPath : path.normalize('C:/python26'),
+        pythonPathFull : path.normalize('C:/python26/python.exe'),
+        fbxSDKPath : path.normalize('C:/Program Files/Autodesk/FBX/FBX Python SDK/2013.3')
+      }
+    }
 
-    var options = this.options({
-      pythonPath : '/usr/bin/python2.6',
-      fbxSDKPath : '/Applications/Autodesk/FBX Python SDK/2013.3'
-    });
+    var isWin = /^win/.test(process.platform);
+    var platformSpecificOptions = isWin ? plaformOptions.win : plaformOptions.mac;
+    console.log(isWin);
+
+    var options = this.options(platformSpecificOptions);
     grunt.log.writeln('Checking for python 2.6');
     if(grunt.file.exists(options.pythonPath)) {
       grunt.log.ok('OK');
@@ -36,23 +49,25 @@ module.exports = function(grunt) {
       done();
       return;
     }
-
+    var doSetupvirtualenvAndFBXSDK = true;
     grunt.log.writeln('Checking for virtualenv');
     var shellStdOutVirtualEnv = shelljs.exec('virtualenv --version');
-    if(shellStdOutVirtualEnv.output.indexOf('not found') === -1) {
+    if(shellStdOutVirtualEnv.output.indexOf('not found') === -1 && shellStdOutVirtualEnv.output.indexOf('not recognized') === -1) {
       grunt.log.ok('OK');
     } else {
       grunt.log.error('virtualenv not found! Attempting to install virtualenv via pip');
-
+      doSetupvirtualenvAndFBXSDK = false;
       grunt.log.writeln('Checking for pip');
       var shellStdOutPip = shelljs.exec('pip --version');
-      if(shellStdOutPip.output.indexOf('not found') === -1) {
+      if(shellStdOutPip.output.indexOf('not found') === -1 && shellStdOutPip.output.indexOf('not recognized') === -1) {
         grunt.log.ok('OK');
+        var shellStdOutInstallVirtualEnv = shelljs.exec('pip install virtualenv');
+        setupvirtualenvAndFBXSDK();
       } else {
         grunt.log.error('pip not found! Attempting to install pip via python script');
         var download = new Download()
         .get('https://bootstrap.pypa.io/get-pip.py')
-        .dest('./tmp')
+        .dest(path.normalize('./tmp'))
         .use(progress());
         download.run(function (err, files, stream) {
           if (err) {
@@ -62,31 +77,25 @@ module.exports = function(grunt) {
           grunt.log.ok('File downloaded successfully!');
           grunt.log.writeln('Installing pip');
 
-          var shellStdOutInstallPip = shelljs.exec('sudo python ./tmp/get-pip.py');
-          done();
+          var pipPath = path.normalize('./tmp/get-pip.py');
+          var shellStdOutInstallPip = shelljs.exec((isWin ? '' : 'sudo ') + 'python ' + pipPath);
+          var shellStdOutInstallVirtualEnv = shelljs.exec('pip install virtualenv');
+          setupvirtualenvAndFBXSDK();
         });
       }
-      var shellStdOutInstallVirtualEnv = shelljs.exec('pip install virtualenv');
     }
 
-    grunt.log.writeln("Checking if virtualenv already created");
-    if(grunt.file.exists('./pyEnv')) {
-      grunt.log.ok("OK");
-    } else {
-      grunt.log.error("Nope! Initializing pyEnv");
-      var shellStdOutSetupVirtualEnv = shelljs.exec('virtualenv -p /usr/bin/python2.6 pyEnv');
-    }
 
     function copyFBXSDKfilesToPyEnv() {
       grunt.log.writeln("Copying FBX SDK files into pyEnv");
       copy({
           src: options.fbxSDKPath + '/include',
-          dest: './pyEnv/include',
+          dest: path.normalize('./pyEnv/include'),
         },
         function(){
           copy({
               src: options.fbxSDKPath + '/lib/Python26',
-              dest: './pyEnv/lib/python2.6',
+              dest: path.normalize('./pyEnv/lib/python2.6'),
             },
             function(){
               grunt.log.ok("OK");
@@ -124,29 +133,42 @@ module.exports = function(grunt) {
       });
     }
 
-    grunt.log.writeln("Checking for Autodesk FBX SDK 2013.3");
-    if(grunt.file.exists(options.fbxSDKPath)) {
-      grunt.log.ok("OK");
-      copyFBXSDKfilesToPyEnv();
-    } else {
-
-      if(!grunt.file.exists('./tmp/fbx20133_fbxpythonsdk_mac.pkg.tgz')) {
-        var download2 = new Download()
-        .get('http://images.autodesk.com/adsk/files/fbx20133_fbxpythonsdk_mac.pkg.tgz')
-        .dest('./tmp')
-        .use(progress());
-        download2.run(function (err, files, stream) {
-          if (err) {
-              throw err;
-          }
-
-          grunt.log.ok('File downloaded successfully!');
-          installFBXSDK();
-        });
+    function setupvirtualenvAndFBXSDK() {
+      grunt.log.writeln("Checking if virtualenv already created");
+      if(grunt.file.exists(path.normalize('./pyEnv'))) {
+        grunt.log.ok("OK");
       } else {
-        grunt.log.ok('File download skipped!');
-        installFBXSDK();
+        grunt.log.error("Nope! Initializing pyEnv");
+        var shellStdOutSetupVirtualEnv = shelljs.exec('virtualenv -p ' + platformSpecificOptions.pythonPathFull + ' pyEnv');
       }
+
+      grunt.log.writeln("Checking for Autodesk FBX SDK 2013.3");
+      if(grunt.file.exists(options.fbxSDKPath)) {
+        grunt.log.ok("OK");
+        copyFBXSDKfilesToPyEnv();
+      } else {
+
+        if(!grunt.file.exists(path.normalize('./tmp/fbx20133_fbxpythonsdk_mac.pkg.tgz'))) {
+          var download2 = new Download()
+          .get('http://images.autodesk.com/adsk/files/fbx20133_fbxpythonsdk_mac.pkg.tgz')
+          .dest(path.normalize('./tmp'))
+          .use(progress());
+          download2.run(function (err, files, stream) {
+            if (err) {
+                throw err;
+            }
+
+            grunt.log.ok('File downloaded successfully!');
+            installFBXSDK();
+          });
+        } else {
+          grunt.log.ok('File download skipped!');
+          installFBXSDK();
+        }
+      }
+    }
+    if(doSetupvirtualenvAndFBXSDK) {
+      setupvirtualenvAndFBXSDK();
     }
   });
 

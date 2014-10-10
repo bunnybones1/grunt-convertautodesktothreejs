@@ -36,7 +36,8 @@
     "grunt": "~0.4.5"
   },
   "keywords": [
-    "gruntplugin"
+    "gruntplugin",
+    "threejs"
   ],
   "dependencies": {
     "grunt-contrib-clean": "^0.5.0",
@@ -46,7 +47,6 @@
     "download-status": "^2.0.2",
     "prompt": "^0.2.14",
     "shelljs": "^0.3.0",
-    "tar.gz": "^0.1.1",
-    "threejs": "git://github.com/bunnybones1/three.js.git"
+    "tar.gz": "^0.1.1"
   }
 }
