@@ -1,7 +1,7 @@
 {
   "name": "grunt-convertautodesktothree",
   "description": "A grunt task that converts autodesk DAE and FBX scenes to JSON scenes for threejs.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/bunnybones1/grunt-convertautodesktothreejs",
   "author": {
     "name": "Tomasz Dysinski",
