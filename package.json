@@ -40,11 +40,11 @@
     "threejs"
   ],
   "dependencies": {
-    "grunt-contrib-clean": "^0.5.0",
-    "grunt": "~0.4.5",
     "directory-copy": "^0.1.0",
     "download": "^3.0.1",
     "download-status": "^2.0.2",
+    "grunt": "~0.4.5",
+    "grunt-contrib-clean": "^0.5.0",
     "prompt": "^0.2.14",
     "shelljs": "^0.3.0",
     "tar.gz": "^0.1.1"

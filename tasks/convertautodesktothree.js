@@ -49,6 +49,7 @@ module.exports = function(grunt) {
       } else {
         grunt.log.ok("Running converter via shell");
         var shellStdOut = shelljs.exec(platformSpecificActivateCommand);
+        grunt.log.ok(shellStdOut);
         var shellCommand = 'python ' + path.normalize(modulePath + options.python.meshConverter) + ' ' + path.normalize(filepath) + ' ' + path.normalize(outputFilePath)
         console.log(shellCommand);
         shellStdOut = shelljs.exec(shellCommand);
