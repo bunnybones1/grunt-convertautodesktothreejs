@@ -27,6 +27,7 @@ module.exports = function(grunt) {
     var plaformOptions = {
       mac: {
         pythonPath : '/usr/bin/python2.6',
+        pythonPathFull : '/usr/bin/python2.6',
         fbxSDKPath : '/Applications/Autodesk/FBX Python SDK/2013.3'
       },
       win: {
